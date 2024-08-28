@@ -1,0 +1,116 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cnpg-operator
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://cloudnative-pg.github.io/charts
+    targetRevision: 0.21.2
+    chart: cloudnative-pg
+    helm:
+      releaseName: main
+      values: |
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cnpg-operator
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+    syncOptions:
+      - CreateNamespace=true
+      - Replace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cnpg-cluster
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/depeche-io/litmus-chaoscon-2024.git
+    targetRevision: main
+    path: argocd-gitops/apps/cnpg
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cnpg-cluster
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+    syncOptions:
+      - CreateNamespace=true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cnpg-cp
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/depeche-io/litmus-chaoscon-2024.git
+    targetRevision: main
+    path: postgresql-data-loss-checker/helm
+    helm:
+      releaseName: primary
+      values: |
+        name: primary
+        readOnly: "false"
+        replicaCount: 2
+        connection:
+          host: mycnpg-rw
+          secretName: mycnpg-app
+          secretKey: password
+          user: app
+          dbname: app
+          sslmode: ""
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cnpg-cluster
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+    syncOptions:
+      - CreateNamespace=true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cnpg-cs
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/depeche-io/litmus-chaoscon-2024.git
+    targetRevision: main
+    path: postgresql-data-loss-checker/helm
+    helm:
+      releaseName: slave
+      values: |
+        name: slave
+        readOnly: "true"
+        replicaCount: 4
+        connection:
+          host: mycnpg-ro
+          secretName: mycnpg-app
+          secretKey: password
+          user: app
+          dbname: app
+          sslmode: ""
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cnpg-cluster
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+    syncOptions:
+      - CreateNamespace=true
