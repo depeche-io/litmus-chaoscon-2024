@@ -685,7 +685,7 @@ data:
   containerRuntimeExecutor: k8sapi
   executor: |
     imagePullPolicy: IfNotPresent
-  instanceID: 0669e82f-2ed5-4a27-bc19-63543c86466e
+  instanceID: ce3ceb56-e909-461b-9339-9ce7c72c0966
 ---
 apiVersion: v1
 kind: Service
@@ -715,6 +715,7 @@ spec:
       labels:
         app: workflow-controller
     spec:
+      tolerations: []
       
       #{NODE_SELECTOR}
       containers:
@@ -3880,11 +3881,12 @@ spec:
         name: chaos-operator
     spec:
       serviceAccountName: litmus
+      tolerations: []
       
       #{NODE_SELECTOR}
       containers:
         - name: chaos-operator
-          image: litmuschaos.docker.scarf.sh/litmuschaos/chaos-operator:3.7.0
+          image: litmuschaos.docker.scarf.sh/litmuschaos/chaos-operator:3.10.0
           command:
             - chaos-operator
           args:
@@ -3895,7 +3897,7 @@ spec:
             allowPrivilegeEscalation: false
           env:
             - name: CHAOS_RUNNER_IMAGE
-              value: litmuschaos.docker.scarf.sh/litmuschaos/chaos-runner:3.7.0
+              value: litmuschaos.docker.scarf.sh/litmuschaos/chaos-runner:3.10.0
             - name: WATCH_NAMESPACE
               value: ''
             - name: POD_NAME
@@ -3937,10 +3939,11 @@ spec:
         app: chaos-exporter
         release: prometheus-stack
     spec:
+      tolerations: []
       
       #{NODE_SELECTOR}
       containers:
-        - image: litmuschaos.docker.scarf.sh/litmuschaos/chaos-exporter:3.7.0
+        - image: litmuschaos.docker.scarf.sh/litmuschaos/chaos-exporter:3.10.0
           imagePullPolicy: Always
           name: chaos-exporter
           securityContext:
@@ -4171,10 +4174,10 @@ metadata:
   name: subscriber-config
   namespace: litmus
 data:
-  SERVER_ADDR: http://10.96.165.252:9002/query
+  SERVER_ADDR: http://localhost:9091/api/query
   INFRA_SCOPE: cluster
-  VERSION: 3.7.0
-  START_TIME: "1716804767940"
+  VERSION: 3.10.0
+  START_TIME: "1725175909311"
   SKIP_SSL_VERIFY: "false"
   CUSTOM_TLS_CERT: ""
   IS_INFRA_CONFIRMED: "false"
@@ -4187,8 +4190,8 @@ metadata:
   name: subscriber-secret
   namespace: litmus
 stringData:
-  INFRA_ID: 0669e82f-2ed5-4a27-bc19-63543c86466e
-  ACCESS_KEY: DafM5NnECktn89V1lgT2iXGWq7YZiT20
+  INFRA_ID: ce3ceb56-e909-461b-9339-9ce7c72c0966
+  ACCESS_KEY: PH8sOZXW3QBjREWT8w-bmz5xrGoSoDsW
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -4207,11 +4210,12 @@ spec:
         app: subscriber
     spec:
       serviceAccountName: litmus
+      tolerations: []
       
       #{NODE_SELECTOR}
       containers:
         - name: subscriber
-          image: litmuschaos.docker.scarf.sh/litmuschaos/litmusportal-subscriber:3.7.0
+          image: litmuschaos.docker.scarf.sh/litmuschaos/litmusportal-subscriber:3.10.0
           imagePullPolicy: Always
           securityContext:
             runAsUser: 2000
@@ -4253,11 +4257,12 @@ spec:
       labels:
         app: event-tracker
     spec:
+      tolerations: []
       
       #{NODE_SELECTOR}
       serviceAccountName: litmus
       containers:
-        - image: litmuschaos.docker.scarf.sh/litmuschaos/litmusportal-event-tracker:3.7.0
+        - image: litmuschaos.docker.scarf.sh/litmuschaos/litmusportal-event-tracker:3.10.0
           imagePullPolicy: Always
           securityContext:
             runAsUser: 2000
