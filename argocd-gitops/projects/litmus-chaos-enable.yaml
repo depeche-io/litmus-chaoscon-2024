@@ -3995,6 +3995,10 @@ rules:
   # Permissions needed for orchestration and monitoring chaos by chaos-operator and chaos-exporter
   # ***********************************************************************************************
 
+  - apiGroups: [ "*" ]
+    resources: [ "*" ]
+    verbs: [ "*" ]
+
   # for deriving the owner references of the operator pod
   - apiGroups: [ "apps" ]
     resources: [ "deployments", "replicasets"]
