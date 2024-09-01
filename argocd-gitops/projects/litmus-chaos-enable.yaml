@@ -4174,7 +4174,7 @@ metadata:
   name: subscriber-config
   namespace: litmus
 data:
-  SERVER_ADDR: http://localhost:9091/api/query
+  SERVER_ADDR: http://main-litmus-frontend-service:9091/api/query
   INFRA_SCOPE: cluster
   VERSION: 3.10.0
   START_TIME: "1725175909311"
