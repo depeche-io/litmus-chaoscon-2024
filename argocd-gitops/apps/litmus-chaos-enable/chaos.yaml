@@ -2,14 +2,14 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: litmus
+  name: litmus-run
 
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: litmus
-  namespace: litmus
+  namespace: litmus-run
 
 ---
 apiVersion: apiextensions.k8s.io/v1
@@ -647,7 +647,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: argo-chaos
-  namespace: litmus
+  namespace: litmus-run
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -660,13 +660,13 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: argo-chaos
-    namespace: litmus
+    namespace: litmus-run
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: argo-chaos-ops-role-binding
-  namespace: litmus
+  namespace: litmus-run
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -674,24 +674,24 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: argo-chaos
-    namespace: litmus
+    namespace: litmus-run
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: workflow-controller-configmap
-  namespace: litmus
+  namespace: litmus-run
 data:
   containerRuntimeExecutor: k8sapi
   executor: |
     imagePullPolicy: IfNotPresent
-  instanceID: ce3ceb56-e909-461b-9339-9ce7c72c0966
+  instanceID: fc541d0b-b9e5-4b86-ba59-c6d453229242
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: workflow-controller-metrics
-  namespace: litmus
+  namespace: litmus-run
 spec:
   ports:
     - name: metrics
@@ -705,7 +705,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: workflow-controller
-  namespace: litmus
+  namespace: litmus-run
 spec:
   selector:
     matchLabels:
@@ -3719,7 +3719,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: litmus-admin
-  namespace: litmus
+  namespace: litmus-run
   labels:
     name: litmus-admin
 ---
@@ -3831,13 +3831,13 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: litmus-admin
-    namespace: litmus
+    namespace: litmus-run
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: litmus-admin-ops-role-binding
-  namespace: litmus
+  namespace: litmus-run
   labels:
     name: litmus-admin-ops-role-binding
 roleRef:
@@ -3847,7 +3847,7 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: litmus-admin
-    namespace: litmus
+    namespace: litmus-run
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -3862,7 +3862,7 @@ metadata:
     app.kubernetes.io/managed-by: kubectl
     name: litmus
   name: chaos-operator-ce
-  namespace: litmus
+  namespace: litmus-run
 spec:
   replicas: 1
   selector:
@@ -3927,7 +3927,7 @@ metadata:
     app: chaos-exporter
     release: prometheus-stack
   name: chaos-exporter
-  namespace: litmus
+  namespace: litmus-run
 spec:
   replicas: 1
   selector:
@@ -3974,7 +3974,7 @@ metadata:
   labels:
     app: chaos-exporter
   name: chaos-exporter
-  namespace: litmus
+  namespace: litmus-run
 spec:
   ports:
     - port: 8080
@@ -4002,7 +4002,7 @@ rules:
   # for deriving the owner references of the operator pod
   - apiGroups: [ "apps" ]
     resources: [ "deployments", "replicasets"]
-    verbs: [ "get", "list", "watch" ]
+    verbs: [ "get", "list" ]
 
   # for the cleanup of jobs in abort scenarios
   - apiGroups: [ "batch" ]
@@ -4069,7 +4069,7 @@ rules:
 
   - apiGroups: [ "apps" ]
     resources: [ "deployments", "daemonsets", "replicasets", "statefulsets" ]
-    verbs: [ "get","list", "watch" ]
+    verbs: [ "get","list" ]
 
   - apiGroups: [ "argoproj.io" ]
     resources:
@@ -4141,13 +4141,13 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: litmus
-    namespace: litmus
+    namespace: litmus-run
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: infra-ops-role
-  namespace: litmus
+  namespace: litmus-run
 rules:
   - apiGroups: [ "" ]
     resources: [ "secrets" ]
@@ -4161,7 +4161,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: infra-ops-role-binding
-  namespace: litmus
+  namespace: litmus-run
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -4169,19 +4169,19 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: litmus
-    namespace: litmus
+    namespace: litmus-run
 
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: subscriber-config
-  namespace: litmus
+  namespace: litmus-run
 data:
-  SERVER_ADDR: http://main-litmus-frontend-service:9091/api/query
+  SERVER_ADDR: http://main-litmus-frontend-service.litmus.svc:9091/api/query
   INFRA_SCOPE: cluster
   VERSION: 3.10.0
-  START_TIME: "1725175909311"
+  START_TIME: "1725187755633"
   SKIP_SSL_VERIFY: "false"
   CUSTOM_TLS_CERT: ""
   IS_INFRA_CONFIRMED: "false"
@@ -4192,16 +4192,16 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: subscriber-secret
-  namespace: litmus
+  namespace: litmus-run
 stringData:
-  INFRA_ID: ce3ceb56-e909-461b-9339-9ce7c72c0966
-  ACCESS_KEY: PH8sOZXW3QBjREWT8w-bmz5xrGoSoDsW
+  INFRA_ID: fc541d0b-b9e5-4b86-ba59-c6d453229242
+  ACCESS_KEY: LovT2paKwulaWo1698bxcshuB4ESiHKL
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: subscriber
-  namespace: litmus
+  namespace: litmus-run
   labels:
     app: subscriber
 spec:
@@ -4250,7 +4250,7 @@ metadata:
   labels:
     app: event-tracker
   name: event-tracker
-  namespace: litmus
+  namespace: litmus-run
 spec:
   replicas: 1
   selector:
